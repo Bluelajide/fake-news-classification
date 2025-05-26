@@ -1,7 +1,7 @@
 # Fake News Detection API using FastAPI and BERT
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from transformers import RobertaTokenizerFast, RobertaForSequenceClassification, pipeline, RobertaPreTrainedModel
+from transformers import RobertaTokenizerFast, RobertaForSequenceClassification, pipeline, RobertaPreTrainedModel, RobertaModel
 import torch
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
