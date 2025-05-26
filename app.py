@@ -9,8 +9,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
     
-model_path = "./roberta-base-clf"
-#model_path = "Bluelajide/roberta-news-classifier"
+#model_path = "./roberta-base-clf"
+model_path = "Bluelajide/roberta-news-classifier"
 
 # Load model and tokenizer
 tokenizer = RobertaTokenizerFast.from_pretrained(model_path)
