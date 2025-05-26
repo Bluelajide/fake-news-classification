@@ -3,3 +3,4 @@ uvicorn
 transformers
 torch
 nltk
+protobuf==3.20.1
