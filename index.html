@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Fake News Detector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google Fonts: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+      font-family: 'Poppins', Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .logo {
+      margin-top: 48px;
+      margin-bottom: 0;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #4f8cff 60%, #a18cd1 100%);
+      border-radius: 18px 50% 50% 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 2.5rem;
+      box-shadow: 0 4px 16px rgba(79,140,255,0.15);
+      user-select: none;
+      animation: popin 1s cubic-bezier(.68,-0.55,.27,1.55);
+    }
+    @keyframes popin {
+      0% { transform: scale(0.7) rotate(-10deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    h1 {
+      margin-top: 18px;
+      color: #22223b;
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-size: 2.1rem;
+      text-shadow: 0 2px 8px rgba(160,140,209,0.07);
+      text-align: center;
+    }
+    .container {
+      background: rgba(255,255,255,0.85);
+      padding: 36px 30px 28px 30px;
+      border-radius: 22px;
+      box-shadow: 0 8px 32px rgba(34,34,59,0.13);
+      margin-top: 36px;
+      width: 95%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-left: 6px solid #4f8cff;
+      backdrop-filter: blur(6px);
+      animation: fadein 1.2s;
+    }
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(30px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    label {
+      font-weight: 600;
+      color: #3a3a5a;
+      margin-bottom: 7px;
+      align-self: flex-start;
+      letter-spacing: 0.5px;
+    }
+    #newsTitle {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #c9c9c9;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      margin-bottom: 16px;
+      background: #f7f8fa;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 4px rgba(79,140,255,0.04);
+    }
+    #newsTitle:focus {
+      border: 1.5px solid #4f8cff;
+      outline: none;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(79,140,255,0.10);
+    }
+    textarea {
+      width: 100%;
+      min-height: 130px;
+      border: 1.5px solid #c9c9c9;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 1.05rem;
+      resize: vertical;
+      margin-bottom: 10px;
+      background: #f7f8fa;
+      transition: border 0.2s, box-shadow 0.2s;
+      box-shadow: 0 1px 4px rgba(79,140,255,0.04);
+    }
+    textarea:focus {
+      border: 1.5px solid #4f8cff;
+      outline: none;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(79,140,255,0.10);
+    }
+    .char-counter {
+      align-self: flex-end;
+      font-size: 0.95rem;
+      color: #888;
+      margin-bottom: 14px;
+      letter-spacing: 0.2px;
+    }
+    button {
+      background: linear-gradient(90deg, #4f8cff 60%, #a18cd1 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 34px;
+      font-size: 1.13rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 12px rgba(79,140,255,0.10);
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    button:hover {
+      background: linear-gradient(90deg, #a18cd1 60%, #4f8cff 100%);
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 4px 16px rgba(79,140,255,0.18);
+    }
+    #result {
+      margin-top: 22px;
+      font-size: 1.13rem;
+      min-height: 28px;
+      text-align: center;
+      word-break: break-word;
+      opacity: 0;
+      transition: opacity 0.5s;
+      background: rgba(240,248,255,0.7);
+      border-radius: 8px;
+      padding: 12px 10px 10px 10px;
+      box-shadow: 0 1px 6px rgba(160,140,209,0.08);
+    }
+    #result.visible {
+      opacity: 1;
+    }
+    #result .reliable {
+      color: #22c55e;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    #result .fake {
+      color: #ef4444;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .footer {
+      margin-top: 48px;
+      color: #555;
+      font-size: 1rem;
+      opacity: 0.7;
+      text-align: center;
+      letter-spacing: 0.2px;
+      padding-bottom: 18px;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 16px 6px 12px 6px;
+        margin-top: 18px;
+      }
+      h1 {
+        margin-top: 12px;
+        font-size: 1.25rem;
+      }
+      .logo {
+        margin-top: 24px;
+        width: 40px;
+        height: 40px;
+        font-size: 1.3rem;
+      }
+      #result {
+        font-size: 1rem;
+        padding: 8px 4px 8px 4px;
+      }
+    }
+    .history-section {
+      margin-top: 28px;
+      width: 100%;
+      max-width: 520px;
+      background: rgba(255,255,255,0.92);
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(79,140,255,0.08);
+      border: 1.5px solid #e0e7ff;
+      padding: 0 0 10px 0;
+      transition: box-shadow 0.2s;
+    }
+    .history-toggle {
+      background: none;
+      border: none;
+      color: #4f8cff;
+      font-weight: 700;
+      font-size: 1.08rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 22px 12px 22px;
+      width: 100%;
+      text-align: left;
+      border-radius: 14px 14px 0 0;
+      transition: background 0.2s;
+    }
+    .history-toggle:hover {
+      background: #f0f7ff;
+    }
+    .history-arrow {
+      display: inline-block;
+      transition: transform 0.2s;
+      font-size: 1.2em;
+    }
+    .history-content {
+      padding: 0 22px 8px 22px;
+      max-height: 220px;
+      overflow-y: auto;
+      transition: max-height 0.3s;
+    }
+    .history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .history-list li {
+      margin-bottom: 10px;
+      padding: 10px 0 8px 0;
+      border-bottom: 1px solid #e0e7ff;
+      background: none;
+      transition: background 0.2s;
+      border-radius: 6px;
+    }
+    .history-list li:hover {
+      background: #f5faff;
+    }
+    @media (max-width: 600px) {
+      .history-section, .history-content {
+        max-width: 98vw;
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+      .history-toggle {
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+    }
+    .info-icon {
+      position: relative;
+      display: inline-block;
+      font-size: 0.95em;      /* smaller icon */
+      font-weight: 400;       /* less bold */
+      cursor: pointer;
+      color: #4f8cff;
+      border-radius: 50%;
+      padding: 0 1px;
+      outline: none;
+      opacity: 0.85;
+    }
+    .info-tooltip {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      left: 50%;
+      top: 120%;
+      transform: translateX(-50%) scale(0.98);
+      background: #fff;
+      color: #22223b;
+      border: 1px solid #e0e7ff;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(79,140,255,0.10);
+      padding: 8px 12px;
+      font-size: 0.92em;      /* smaller tooltip text */
+      font-weight: 400;       /* less bold */
+      width: 210px;
+      z-index: 10;
+      transition: opacity 0.2s, transform 0.2s;
+      text-align: left;
+      line-height: 1.4;
+    }
+    .info-icon:focus .info-tooltip,
+    .info-icon:hover .info-tooltip {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(-8px) scale(1);
+    }
+    #spinner {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 999;
+      background: rgba(255,255,255,0.5);
+      align-items: center;
+      justify-content: center;
+    }
+    #spinner div {
+      border: 6px solid #e0e7ff;
+      border-top: 6px solid #4f8cff;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+  </style>
+</head>
+<body>
+  <div class="logo" title="Fake News Detector">📰</div>
+  <h1>Fake News Detector</h1>
+  <div class="container">
+    <!-- <label for="newsTitle">News Title</label>
+    <input id="newsTitle" type="text" placeholder="Enter news title..."> -->
+    <label for="newsText" style="display:flex;align-items:center;gap:6px;">
+      Article Content
+      <span class="info-icon" tabindex="0" aria-label="What does this do?">ℹ️
+        <span class="info-tooltip">
+          This tool will predict if the content is likely REAL or FAKE using an AI model with just the click of a button.
+        </span>
+      </span>
+    </label>
+    <textarea id="newsText" placeholder="Paste news article here" oninput="updateCounter()"></textarea>
+    <div class="char-counter" id="charCounter">0/2000</div>
+    <button onclick="detectFakeNews()">Check</button>
+    <div id="result"></div>
+    <div id="confidenceBar" style="height:8px;width:100%;background:#eee;border-radius:4px;margin-top:8px;display:none;">
+      <div id="confidenceFill" style="height:100%;width:0;background:#4f8cff;border-radius:4px;"></div>
+    </div>
+  </div>
+  <div id="history" class="history-section">
+    <button id="toggleHistoryBtn" class="history-toggle">
+      <span id="historyArrow" class="history-arrow">▼</span>
+      History
+    </button>
+    <div id="historyContent" class="history-content" style="display:none;">
+      <ul id="historyList" class="history-list"></ul>
+    </div>
+  </div>
+  <div class="footer">
+    &copy; 2025 <b>Fake News Detector</b> &mdash; Designed for You by Quang Nguyen
+  </div>
+  <div id="spinner">
+    <div></div>
+  </div>
+  <script>
+function updateCounter() {
+  const textarea = document.getElementById('newsText');
+  const counter = document.getElementById('charCounter');
+  counter.textContent = `${textarea.value.length}/2000`;
+}
+updateCounter();
+
+function addToHistory(text, label, confidence) {
+  const historyList = document.getElementById('historyList');
+  const li = document.createElement('li');
+  li.style.marginBottom = "10px";
+  li.style.padding = "8px 0";
+  li.style.borderBottom = "1px solid #e0e7ff";
+  let labelClass = '';
+  if (label === "REAL") labelClass = 'reliable';
+  if (label === "FAKE") labelClass = 'fake';
+  li.innerHTML = `<span style="color:#888;">"${text.slice(0, 40)}${text.length > 40 ? '...' : ''}"</span>
+    <br>
+    <strong>Label:</strong> <span class="${labelClass}">${label}</span>
+    <strong>Confidence:</strong> ${(confidence*100).toFixed(2)}%`;
+  historyList.prepend(li);
+}
+
+async function detectFakeNews() {
+  const text = document.getElementById('newsText').value;
+  const resultDiv = document.getElementById('result');
+  const confidenceBar = document.getElementById('confidenceBar');
+  const confidenceFill = document.getElementById('confidenceFill');
+  const spinner = document.getElementById('spinner');
+
+  // Client-side check
+  if (text.length > 2000) {
+    resultDiv.innerText = "Error: Input is too long. Please limit to 2000 characters.";
+    resultDiv.classList.add('visible');
+    confidenceBar.style.display = 'none';
+    return;
+  }
+
+  spinner.style.display = 'flex'; // Show spinner
+  resultDiv.innerText = "Checking...";
+  resultDiv.classList.add('visible');
+
+  try {
+    const response = await fetch('/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text })
+    });
+
+    spinner.style.display = 'none'; // Hide spinner
+
+    if (!response.ok) {
+      let errorMsg = response.statusText;
+      try {
+        const error = await response.json();
+        errorMsg = error.detail || errorMsg;
+      } catch {}
+      resultDiv.innerText = "Error: " + errorMsg;
+      resultDiv.classList.add('visible');
+      return;
+    }
+
+    const data = await response.json();
+
+    let labelClass = '';
+    if (data.Label === "REAL") labelClass = 'reliable';
+    if (data.Label === "FAKE") labelClass = 'fake';
+
+    resultDiv.innerHTML = `Label: <span class="${labelClass}">${data.Label}</span>, Confidence: ${data.Confidence.toFixed(3)}`;
+    resultDiv.classList.add('visible');
+
+    // Update confidence bar
+    confidenceBar.style.display = 'block';
+    confidenceFill.style.width = (data.Confidence*100) + '%';
+    confidenceFill.style.background = data.Label === "REAL" ? "#22c55e" : "#ef4444";
+
+    // Add to history
+    addToHistory(text, data.Label, data.Confidence);
+
+  } catch (err) {
+    spinner.style.display = 'none'; // Hide spinner on error
+    resultDiv.innerText = "Error: " + err;
+    resultDiv.classList.add('visible');
+  }
+}
+
+// Collapsible history logic
+const toggleBtn = document.getElementById('toggleHistoryBtn');
+const historyContent = document.getElementById('historyContent');
+const historyArrow = document.getElementById('historyArrow');
+toggleBtn.onclick = function() {
+  if (historyContent.style.display === "none") {
+    historyContent.style.display = "block";
+    historyArrow.style.transform = "rotate(0deg)";
+  } else {
+    historyContent.style.display = "none";
+    historyArrow.style.transform = "rotate(-90deg)";
+  }
+};
+  </script>
+</body>
+</html>
