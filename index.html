@@ -18,7 +18,7 @@
     }
     .logo {
       margin-top: 48px;
-      margin-bottom: 0;
+      margin-bottom: 12px; /* was 0 */
       width: 60px;
       height: 60px;
       background: linear-gradient(135deg, #4f8cff 60%, #a18cd1 100%);
@@ -38,6 +38,7 @@
     }
     h1 {
       margin-top: 18px;
+      margin-bottom: 24px; /* add more space below title */
       color: #22223b;
       font-weight: 700;
       letter-spacing: 1px;
@@ -46,18 +47,19 @@
       text-align: center;
     }
     .container {
-      background: rgba(255,255,255,0.85);
-      padding: 36px 30px 28px 30px;
-      border-radius: 22px;
-      box-shadow: 0 8px 32px rgba(34,34,59,0.13);
+      background: rgba(255,255,255,0.92); /* slightly more opaque */
+      padding: 40px 36px 32px 36px;       /* more padding */
+      border-radius: 26px;                /* more rounded */
+      box-shadow: 0 12px 32px rgba(34,34,59,0.18), 0 2px 8px rgba(79,140,255,0.08);
       margin-top: 36px;
+      margin-bottom: 32px;
       width: 95%;
-      max-width: 520px;
+      max-width: 540px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      border-left: 6px solid #4f8cff;
-      backdrop-filter: blur(6px);
+      border-left: 7px solid #4f8cff;
+      backdrop-filter: blur(8px);
       animation: fadein 1.2s;
     }
     @keyframes fadein {
@@ -108,11 +110,11 @@
       box-shadow: 0 2px 8px rgba(79,140,255,0.10);
     }
     .char-counter {
-      align-self: flex-end;
-      font-size: 0.95rem;
+      font-size: 0.97rem;
       color: #888;
-      margin-bottom: 14px;
       letter-spacing: 0.2px;
+      min-width: 110px;
+      text-align: right;
     }
     button {
       background: linear-gradient(90deg, #4f8cff 60%, #a18cd1 100%);
@@ -128,39 +130,56 @@
       margin-bottom: 12px;
       letter-spacing: 0.5px;
     }
-    button:hover {
-      background: linear-gradient(90deg, #a18cd1 60%, #4f8cff 100%);
-      transform: translateY(-2px) scale(1.04);
-      box-shadow: 0 4px 16px rgba(79,140,255,0.18);
+    button#clearBtn {
+      background: #ef4444;
+      color: #fff;
+      margin-right: 10px;
+      transition: background 0.2s;
+    }
+    button#clearBtn:hover {
+      background: #b91c1c;
+    }
+    button[onclick="detectFakeNews()"] {
+      background: #4f8cff;
+      color: #fff;
+      margin-left: 10px;
+      transition: background 0.2s;
+    }
+    button[onclick="detectFakeNews()"]:hover {
+      background: #2563eb;
     }
     #result {
       margin-top: 22px;
-      font-size: 1.13rem;
-      min-height: 28px;
+      font-size: 1.2rem;
+      min-height: 32px;
       text-align: center;
       word-break: break-word;
       opacity: 0;
-      transition: opacity 0.5s;
-      background: rgba(240,248,255,0.7);
-      border-radius: 8px;
-      padding: 12px 10px 10px 10px;
-      box-shadow: 0 1px 6px rgba(160,140,209,0.08);
+      transition: opacity 0.5s, background 0.3s;
+      background: rgba(240,248,255,0.9);
+      border-radius: 12px;
+      padding: 16px 12px 14px 12px;
+      box-shadow: 0 2px 12px rgba(160,140,209,0.10);
     }
     #result.visible {
       opacity: 1;
     }
     #result .reliable {
+      background: #e6fbe9;
       color: #22c55e;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-weight: bold;
     }
     #result .fake {
+      background: #ffeaea;
       color: #ef4444;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-weight: bold;
     }
     .footer {
-      margin-top: 48px;
+      margin-top: 56px; /* more space above footer */
       color: #555;
       font-size: 1rem;
       opacity: 0.7;
@@ -189,7 +208,7 @@
       }
     }
     .history-section {
-      margin-top: 28px;
+      margin-top: 40px; /* more space above history */
       width: 100%;
       max-width: 520px;
       background: rgba(255,255,255,0.92);
@@ -336,7 +355,16 @@
       </span>
     </label>
     <textarea id="newsText" placeholder="Paste news article here" oninput="updateCounter()"></textarea>
-    <div class="char-counter" id="charCounter">0/2000</div>
+    <!-- Flex row for Clear All (left) and counter (right) -->
+    <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+      <button id="clearBtn" type="button"
+        style="background:#ef4444; color:#fff; padding:8px 18px; border-radius:8px; font-size:1rem; font-weight:600; border:none; cursor:pointer;">
+        Clear All
+      </button>
+      <div class="char-counter" id="charCounter" style="margin-bottom:0; margin-left:10px; flex-shrink:0; text-align:right;">
+        0/2000
+      </div>
+    </div>
     <button onclick="detectFakeNews()">Check</button>
     <div id="result"></div>
     <div id="confidenceBar" style="height:8px;width:100%;background:#eee;border-radius:4px;margin-top:8px;display:none;">
@@ -365,6 +393,15 @@ function updateCounter() {
   counter.textContent = `${textarea.value.length}/2000`;
 }
 updateCounter();
+
+// Add this for the Clear All button
+document.getElementById('clearBtn').onclick = function() {
+  document.getElementById('newsText').value = '';
+  updateCounter();
+  document.getElementById('result').innerText = '';
+  document.getElementById('result').classList.remove('visible');
+  document.getElementById('confidenceBar').style.display = 'none';
+};
 
 function addToHistory(text, label, confidence) {
   const historyList = document.getElementById('historyList');
