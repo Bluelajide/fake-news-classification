@@ -3,7 +3,6 @@
 <head>
   <title>Fake News Detector</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Google Fonts: Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -344,9 +343,7 @@
   <div class="logo" title="Fake News Detector">📰</div>
   <h1>Fake News Detector</h1>
   <div class="container">
-    <!-- <label for="newsTitle">News Title</label>
-    <input id="newsTitle" type="text" placeholder="Enter news title..."> -->
-    <label for="newsText" style="display:flex;align-items:center;gap:6px;">
+       <label for="newsText" style="display:flex;align-items:center;gap:6px;">
       Article Content
       <span class="info-icon" tabindex="0" aria-label="What does this do?">ℹ️
         <span class="info-tooltip">
@@ -355,7 +352,6 @@
       </span>
     </label>
     <textarea id="newsText" placeholder="Paste news article here" oninput="updateCounter()"></textarea>
-    <!-- Flex row for Clear All (left) and counter (right) -->
     <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
       <button id="clearBtn" type="button"
         style="background:#ef4444; color:#fff; padding:8px 18px; border-radius:8px; font-size:1rem; font-weight:600; border:none; cursor:pointer;">
@@ -394,7 +390,6 @@ function updateCounter() {
 }
 updateCounter();
 
-// Add this for the Clear All button
 document.getElementById('clearBtn').onclick = function() {
   document.getElementById('newsText').value = '';
   updateCounter();
